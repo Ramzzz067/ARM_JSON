@@ -1,0 +1,148 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "extensions_enablevmAccess_username": {
+            "type": "SecureString"
+        },
+        "extensions_enablevmAccess_password": {
+            "type": "SecureString"
+        },
+        "extensions_enablevmAccess_ssh_key": {
+            "type": "SecureString"
+        },
+        "extensions_enablevmAccess_reset_ssh": {
+            "type": "SecureString"
+        },
+        "extensions_enablevmAccess_remove_user": {
+            "type": "SecureString"
+        },
+        "extensions_enablevmAccess_expiration": {
+            "type": "SecureString"
+        },
+        "virtualMachines_labo0708_vm_name": {
+            "defaultValue": "labo0708-vm",
+            "type": "String"
+        },
+        "disks_labo0708_vm_disk1_423089de5bcc4f19a39d38a27cb3aa4a_externalid": {
+            "defaultValue": "/subscriptions/c1847f93-4eca-481f-bf44-45187e4b50e4/resourceGroups/Laboratoire0708/providers/Microsoft.Compute/disks/labo0708-vm_disk1_423089de5bcc4f19a39d38a27cb3aa4a",
+            "type": "String"
+        },
+        "networkInterfaces_labo0708_vm543_z3_externalid": {
+            "defaultValue": "/subscriptions/c1847f93-4eca-481f-bf44-45187e4b50e4/resourceGroups/Laboratoire0708/providers/Microsoft.Network/networkInterfaces/labo0708-vm543_z3",
+            "type": "String"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.Compute/virtualMachines",
+            "apiVersion": "2023-03-01",
+            "name": "[parameters('virtualMachines_labo0708_vm_name')]",
+            "location": "westeurope",
+            "zones": [
+                "3"
+            ],
+            "identity": {
+                "type": "SystemAssigned"
+            },
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "Standard_B1s"
+                },
+                "storageProfile": {
+                    "imageReference": {
+                        "publisher": "canonical",
+                        "offer": "0001-com-ubuntu-server-focal",
+                        "sku": "20_04-lts-gen2",
+                        "version": "latest"
+                    },
+                    "osDisk": {
+                        "osType": "Linux",
+                        "name": "[concat(parameters('virtualMachines_labo0708_vm_name'), '_disk1_423089de5bcc4f19a39d38a27cb3aa4a')]",
+                        "createOption": "FromImage",
+                        "caching": "ReadWrite",
+                        "managedDisk": {
+                            "storageAccountType": "Premium_LRS",
+                            "id": "[parameters('disks_labo0708_vm_disk1_423089de5bcc4f19a39d38a27cb3aa4a_externalid')]"
+                        },
+                        "deleteOption": "Delete",
+                        "diskSizeGB": 30
+                    },
+                    "dataDisks": [],
+                    "diskControllerType": "SCSI"
+                },
+                "osProfile": {
+                    "computerName": "[parameters('virtualMachines_labo0708_vm_name')]",
+                    "adminUsername": "azureuser",
+                    "linuxConfiguration": {
+                        "disablePasswordAuthentication": true,
+                        "ssh": {
+                            "publicKeys": [
+                                {
+                                    "path": "/home/azureuser/.ssh/authorized_keys",
+                                    "keyData": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCzJdBwIn8STLQAcPO6cEytSgjps3X5+DOvHlouws+vMZQU9c5J5c2kl6wK0KtqDtPQbLL2UMP01fGqjbGMoraKLlEChvkZ5e39jdX47dC5/KEoB2QU0cHXE6TDnSum8/Cj95Km9Bi6J2OXYnbBuVXtGr2pUcFPTrbd2d+PDXObhT80iL7K9AFIdTIpvITBEDPjNEwmr8PbdidXsuzKh28J2i2iG9K8/KtMoK2h7hXEd85JfIk6M3hoxQVWvtdaSiTLOo/uRpuOAfCPIwU4c+cEq6D9GyYfznthuZtTVlWOEqUlb19DzHeiECA29nuCnDEQsLZf1SNF47PYZ3hrc0CszRtuu2fhbxjmNTZ+7Ic/b8KZHEobnEXu2UaY+SyYi17jWL53MGktpwM9DEI1JJIYf1M2jNjCDhHkCaT7pJ7/T4lPPqmud+ys9M8qN6r8hcDJy+7b9y8r07EHU48/JqbgqnbcwAoD3rQho3sFO9Z0A8d6yU3tESgcqQ5U3JJciiE= generated-by-azure"
+                                }
+                            ]
+                        },
+                        "provisionVMAgent": true,
+                        "patchSettings": {
+                            "patchMode": "ImageDefault",
+                            "assessmentMode": "ImageDefault"
+                        },
+                        "enableVMAgentPlatformUpdates": false
+                    },
+                    "secrets": [],
+                    "allowExtensionOperations": true,
+                    "requireGuestProvisionSignal": true
+                },
+                "securityProfile": {
+                    "uefiSettings": {
+                        "secureBootEnabled": true,
+                        "vTpmEnabled": true
+                    },
+                    "securityType": "TrustedLaunch"
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[parameters('networkInterfaces_labo0708_vm543_z3_externalid')]",
+                            "properties": {
+                                "deleteOption": "Delete"
+                            }
+                        }
+                    ]
+                },
+                "diagnosticsProfile": {
+                    "bootDiagnostics": {
+                        "enabled": true
+                    }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Compute/virtualMachines/extensions",
+            "apiVersion": "2023-03-01",
+            "name": "[concat(parameters('virtualMachines_labo0708_vm_name'), '/enablevmAccess')]",
+            "location": "westeurope",
+            "dependsOn": [
+                "[resourceId('Microsoft.Compute/virtualMachines', parameters('virtualMachines_labo0708_vm_name'))]"
+            ],
+            "properties": {
+                "autoUpgradeMinorVersion": true,
+                "publisher": "Microsoft.OSTCExtensions",
+                "type": "VMAccessForLinux",
+                "typeHandlerVersion": "1.5",
+                "settings": {},
+                "protectedSettings": {
+                    "username": "[parameters('extensions_enablevmAccess_username')]",
+                    "password": "[parameters('extensions_enablevmAccess_password')]",
+                    "ssh_key": "[parameters('extensions_enablevmAccess_ssh_key')]",
+                    "reset_ssh": "[parameters('extensions_enablevmAccess_reset_ssh')]",
+                    "remove_user": "[parameters('extensions_enablevmAccess_remove_user')]",
+                    "expiration": "[parameters('extensions_enablevmAccess_expiration')]"
+                }
+            }
+        }
+    ]
+}
